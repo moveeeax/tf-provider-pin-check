@@ -1,0 +1,13 @@
+# Built binaries — anchored to the repo root so a same-named source directory is
+# never accidentally ignored.
+/tf-provider-pin-check
+/tfpin
+*.test
+*.out
+
+# Go workspace / vendor cruft
+/vendor/
+
+# Keep fixtures tracked no matter what the globs above match.
+!testdata/**
+!examples/**

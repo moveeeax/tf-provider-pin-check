@@ -1,0 +1,8 @@
+- id: tf-provider-pin-check
+  name: tf-provider-pin-check
+  description: Fail when a Terraform provider or module reference is not pinned.
+  entry: tf-provider-pin-check
+  language: golang
+  files: \.tf$
+  pass_filenames: false
+  args: ["."]

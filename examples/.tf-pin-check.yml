@@ -1,0 +1,7 @@
+# Providers and modules allowed to stay unpinned, plus paths to skip.
+providers:
+  - random
+modules: []
+paths:
+  - "**/.terraform/**"
+strict: false

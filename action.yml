@@ -1,0 +1,62 @@
+name: tf-provider-pin-check
+description: Fail CI when a Terraform provider or module reference is not pinned to an explicit version.
+branding:
+  icon: lock
+  color: purple
+inputs:
+  path:
+    description: Directory (or space-separated directories) to scan.
+    required: false
+    default: "."
+  config:
+    description: Path to an exceptions file (defaults to .tf-pin-check.yml in the target).
+    required: false
+    default: ""
+  strict:
+    description: Reject the pessimistic ~> operator and demand exact versions.
+    required: false
+    default: "false"
+  format:
+    description: Output format, "text" or "json".
+    required: false
+    default: "text"
+  fail-on-findings:
+    description: Fail the step when unpinned references are found.
+    required: false
+    default: "true"
+outputs:
+  exit-code:
+    description: The scanner exit code (0 = clean, 1 = findings).
+    value: ${{ steps.scan.outputs.exit-code }}
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-go@v5
+      with:
+        go-version-file: ${{ github.action_path }}/go.mod
+        cache: false
+
+    - id: scan
+      shell: bash
+      run: |
+        # GitHub wraps composite run steps in `bash -e`; the scanner exits 1 on
+        # findings by design, so disable errexit and record the code ourselves.
+        set +e
+        go -C "${{ github.action_path }}" build -o "${RUNNER_TEMP:-/tmp}/tf-provider-pin-check" .
+        build_rc=$?
+        if [ "$build_rc" -ne 0 ]; then
+          echo "failed to build tf-provider-pin-check" >&2
+          exit "$build_rc"
+        fi
+        args=(-format "${{ inputs.format }}")
+        if [ "${{ inputs.strict }}" = "true" ]; then args+=(-strict); fi
+        if [ -n "${{ inputs.config }}" ]; then args+=(-config "${{ inputs.config }}"); fi
+        # shellcheck disable=SC2206
+        args+=(${{ inputs.path }})
+        "${RUNNER_TEMP:-/tmp}/tf-provider-pin-check" "${args[@]}"
+        code=$?
+        echo "exit-code=$code" >> "$GITHUB_OUTPUT"
+        if [ "$code" -ne 0 ] && [ "${{ inputs.fail-on-findings }}" = "true" ]; then
+          exit "$code"
+        fi
+        exit 0
