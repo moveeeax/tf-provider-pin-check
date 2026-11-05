@@ -6,26 +6,35 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ["1.26", "1.27"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      # Go version comes straight from go.mod.
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
-          go-version-file: go.mod
+          go-version: ${{ matrix.go }}
           cache: true
 
       - name: Build
         run: go build ./...
 
+      - name: gofmt
+        run: test -z "$(gofmt -l .)" || { gofmt -l .; exit 1; }
+
       - name: Vet
         run: go vet ./...
 
       - name: Unit tests
-        run: go test ./... -count=1
+        run: go test -race ./... -count=1
 
       # Smoke-test the built binary the way a user runs it: the good fixtures
       # must exit 0, the bad fixtures must exit 1 with findings.

@@ -1,7 +1,7 @@
 # tf-provider-pin-check
 
 [![ci](https://github.com/moveeeax/tf-provider-pin-check/actions/workflows/ci.yml/badge.svg)](https://github.com/moveeeax/tf-provider-pin-check/actions/workflows/ci.yml)
-[![Go](https://img.shields.io/badge/go-1.22-00ADD8?logo=go&logoColor=white)](go.mod)
+[![Go](https://img.shields.io/badge/go-1.26%2B-00ADD8?logo=go&logoColor=white)](go.mod)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A fast CI check that fails when any Terraform **provider** or **module** reference
