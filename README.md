@@ -97,3 +97,7 @@ the constraint rules above. `.terraform/` and `.git/` directories are skipped.
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+---
+
+**Archived on 2026-11-05.** tflint's terraform ruleset already ships all three checks (`terraform_required_providers`, `terraform_module_version`, `terraform_module_pinned_source`), so the current feature set is redundant. The repo is only worth keeping if it adds lock-file checks (feature 1), which tflint does not do.
